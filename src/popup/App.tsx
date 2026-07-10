@@ -1,19 +1,22 @@
 import { OpenSidePanel } from '@/components/OpenSidePanel'
-import { Status, useAppStatus } from '@/components/Status'
 
 export default function App() {
-    const { status } = useAppStatus()
-
     return (
-        <div className="flex flex-col gap-4 p-4 min-w-[320px]">
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">HH Free Cheat</p>
-            <h1 className="text-lg font-semibold">Quick actions</h1>
-            <p className="text-sm text-muted-foreground">
-                Open the main extension interface in the side panel and keep working next to the vacancy page.
-            </p>
+        <div className="flex min-w-[300px] flex-col gap-4 bg-background p-4 text-foreground">
+            <header>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
+                    HH Free Cheat
+                </p>
+            </header>
+
+            <section className="rounded-xl border border-border bg-card p-4">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                    Помогает сохранить резюме, подтянуть вакансию и сгенерировать сопроводительное через вашу LLM.
+                    Основной интерфейс — в сайдпанели рядом со страницей.
+                </p>
+            </section>
 
             <OpenSidePanel />
-            <Status message={status.message} type={status.type} />
         </div>
     )
 }

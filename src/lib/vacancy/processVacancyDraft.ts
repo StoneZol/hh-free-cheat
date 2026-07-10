@@ -10,6 +10,7 @@ import type { VacancyPageDraft } from '@/lib/types/vacancy/types'
 
 let lastProcessedFingerprint = ''
 let isClassifying = false
+let pendingDraft: VacancyPageDraft | null = null
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
 function buildDraftFingerprint(draft: VacancyPageDraft): string {
@@ -19,7 +20,12 @@ function buildDraftFingerprint(draft: VacancyPageDraft): string {
 async function processVacancyDraft(draft: VacancyPageDraft): Promise<void> {
     const fingerprint = buildDraftFingerprint(draft)
 
-    if (!isVacancyTextSufficient(draft.text) || fingerprint === lastProcessedFingerprint || isClassifying) {
+    if (!isVacancyTextSufficient(draft.text) || fingerprint === lastProcessedFingerprint) {
+        return
+    }
+
+    if (isClassifying) {
+        pendingDraft = draft
         return
     }
 
@@ -88,6 +94,13 @@ async function processVacancyDraft(draft: VacancyPageDraft): Promise<void> {
         })
     } finally {
         isClassifying = false
+
+        const nextDraft = pendingDraft
+        pendingDraft = null
+
+        if (nextDraft) {
+            void processVacancyDraft(nextDraft)
+        }
     }
 }
 

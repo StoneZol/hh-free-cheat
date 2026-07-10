@@ -12,6 +12,7 @@ import {
     VACANCY_CLASSIFY_STATE_STORAGE_KEY,
 } from '@/lib/configs/vacancy/classifyStateStorage'
 import { SYNC_VACANCY_DRAFT_MESSAGE } from '@/lib/extension/contentMessages'
+import { isSamePageUrl } from '@/lib/helpers/isSamePageUrl'
 import { isVacancyParseTab } from '@/lib/hh/page'
 import type { LastVacancy, VacancyClassifyState, VacancyPageDraft } from '@/lib/types/vacancy/types'
 
@@ -42,18 +43,6 @@ async function getActiveTab(): Promise<chrome.tabs.Tab | undefined> {
     })
 
     return activeTab
-}
-
-function isSamePageUrl(left: string, right: string): boolean {
-    if (!left || !right) {
-        return false
-    }
-
-    try {
-        return new URL(left).href === new URL(right).href
-    } catch {
-        return left === right
-    }
 }
 
 async function requestActiveTabVacancySync(): Promise<void> {

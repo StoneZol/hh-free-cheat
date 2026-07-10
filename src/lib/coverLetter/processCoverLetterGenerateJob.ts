@@ -1,7 +1,7 @@
 import { saveCoverLetterGenerateJob } from '@/lib/configs/jobs/coverLetterGenerateJobStorage'
 import { getSelectedResumeForGeneration } from '@/lib/configs/resume/storage'
-import { getLastVacancyForGeneration } from '@/lib/configs/vacancy/lastVacancyStorage'
 import type { CoverLetterGenerateJob } from '@/lib/types/jobs/coverLetterGenerateJob'
+import { resolveVacancyForGeneration } from '@/lib/vacancy/resolveVacancyForGeneration'
 import { generateCoverLetterWithLlm } from './generateCoverLetterWithLlm'
 
 export async function processCoverLetterGenerateJob(
@@ -18,11 +18,15 @@ export async function processCoverLetterGenerateJob(
     try {
         const [resume, vacancy] = await Promise.all([
             getSelectedResumeForGeneration(),
-            getLastVacancyForGeneration(),
+            resolveVacancyForGeneration(job.vacancyUrl),
         ])
 
         if (!resume) {
             throw new Error('Выберите резюме в sidepanel перед генерацией сопроводительного.')
+        }
+
+        if (!vacancy) {
+            throw new Error('Вакансия не синхронизирована. Откройте страницу вакансии и подождите парсинг.')
         }
 
         const letter = await generateCoverLetterWithLlm({
