@@ -7,6 +7,8 @@ export const contentPlatformSchema = z.object({
     resumePagePatterns: z.array(z.string()),
     resumeContentSelectors: z.array(z.string()),
     vacancyPagePatterns: z.array(z.string()),
+    vacancyParsePagePatterns: z.array(z.string()),
+    vacancyParseContentSelectors: z.array(z.string()),
     vacancyLetterInputSelectors: z.array(z.string()),
     vacancyLetterInjectSelectors: z.array(z.string()),
 })

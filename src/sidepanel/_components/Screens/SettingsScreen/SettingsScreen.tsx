@@ -211,7 +211,7 @@ const SettingsScreenContent = () => {
                             key: `${platform.id}-vacancyPagePatterns`,
                             label: 'Паттерны страниц вакансий',
                             value: stringifyLines(platform.vacancyPagePatterns),
-                            description: 'Regex-паттерны для страниц вакансий вида `https://{city}.hh.ru/vacancy/{id}`.',
+                            description: 'Regex-паттерны для vacancy-flow: страница вакансии и отклик/опрос.',
                             defaultExample: stringifyLines(defaultPlatform.vacancyPagePatterns),
                             rows: Math.max(3, platform.vacancyPagePatterns.length + 1),
                             helperText: 'Можно указать несколько значений. Каждый паттерн с новой строки.',
@@ -219,6 +219,36 @@ const SettingsScreenContent = () => {
                                 updateContentPlatform(platformIndex, (currentPlatform) => ({
                                     ...currentPlatform,
                                     vacancyPagePatterns: parseLinesForEdit(value),
+                                })),
+                        },
+                        {
+                            key: `${platform.id}-vacancyParsePagePatterns`,
+                            label: 'Паттерны страниц парсинга вакансии',
+                            value: stringifyLines(platform.vacancyParsePagePatterns),
+                            description:
+                                'Regex-паттерны страниц, с которых читаем текст вакансии для генерации сопроводительного.',
+                            defaultExample: stringifyLines(defaultPlatform.vacancyParsePagePatterns),
+                            rows: Math.max(3, platform.vacancyParsePagePatterns.length + 1),
+                            helperText: 'Обычно только страница вакансии, без экрана отклика.',
+                            onChange: (value) =>
+                                updateContentPlatform(platformIndex, (currentPlatform) => ({
+                                    ...currentPlatform,
+                                    vacancyParsePagePatterns: parseLinesForEdit(value),
+                                })),
+                        },
+                        {
+                            key: `${platform.id}-vacancyParseContentSelectors`,
+                            label: 'Селекторы якоря контента вакансии',
+                            value: stringifyLines(platform.vacancyParseContentSelectors),
+                            description:
+                                'Опционально. CSS-селекторы контейнера с описанием вакансии. Если пусто — парсинг по якорю недоступен.',
+                            defaultExample: stringifyLines(defaultPlatform.vacancyParseContentSelectors),
+                            rows: Math.max(3, platform.vacancyParseContentSelectors.length + 1),
+                            helperText: 'Опционально. Можно оставить пустым. Каждый селектор с новой строки.',
+                            onChange: (value) =>
+                                updateContentPlatform(platformIndex, (currentPlatform) => ({
+                                    ...currentPlatform,
+                                    vacancyParseContentSelectors: parseLinesForEdit(value),
                                 })),
                         },
                         {

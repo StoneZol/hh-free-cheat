@@ -12,6 +12,10 @@ export const DEFAULT_CONTENT_CONFIG: ContentConfig = {
                 '^https://(?:[^./]+\\.)?hh\\.ru/vacancy/\\d+',
                 '^https://(?:[^./]+\\.)?hh\\.ru/applicant/vacancy_response',
             ],
+            vacancyParsePagePatterns: ['^https://(?:[^./]+\\.)?hh\\.ru/vacancy/\\d+'],
+            vacancyParseContentSelectors: [
+                '.bloko-column.bloko-column_container.bloko-column_xs-4.bloko-column_s-8.bloko-column_m-12.bloko-column_l-10',
+            ],
             vacancyLetterInputSelectors: [
                 '[data-qa="vacancy-response-popup-form-letter-input"]',
             ],
@@ -73,7 +77,10 @@ export function getEnabledContentPlatforms(config: ContentConfig): ContentPlatfo
 
 function findMatchingPlatform(
     url: string,
-    patternsKey: 'resumePagePatterns' | 'vacancyPagePatterns',
+    patternsKey:
+        | 'resumePagePatterns'
+        | 'vacancyPagePatterns'
+        | 'vacancyParsePagePatterns',
     config: ContentConfig,
 ): ContentPlatform | null {
     return (
@@ -97,6 +104,20 @@ export function getMatchingVacancyPlatform(
     return findMatchingPlatform(url, 'vacancyPagePatterns', config)
 }
 
+export function getMatchingVacancyParsePlatform(
+    url: string,
+    config: ContentConfig = DEFAULT_CONTENT_CONFIG,
+): ContentPlatform | null {
+    return findMatchingPlatform(url, 'vacancyParsePagePatterns', config)
+}
+
+export function isVacancyParsePage(
+    url: string,
+    config: ContentConfig = DEFAULT_CONTENT_CONFIG,
+): boolean {
+    return Boolean(getMatchingVacancyParsePlatform(url, config))
+}
+
 export function getResumeContentElementFromConfig(
     url: string,
     config: ContentConfig = DEFAULT_CONTENT_CONFIG,
@@ -117,6 +138,37 @@ export function getResumeContentElementFromConfig(
     }
 
     return null
+}
+
+export function getVacancyContentElementFromConfig(
+    url: string,
+    config: ContentConfig = DEFAULT_CONTENT_CONFIG,
+    root: ParentNode = document,
+): HTMLElement | null {
+    const platform = getMatchingVacancyParsePlatform(url, config)
+
+    if (!platform || platform.vacancyParseContentSelectors.length === 0) {
+        return null
+    }
+
+    for (const selector of platform.vacancyParseContentSelectors) {
+        const element = root.querySelector<HTMLElement>(selector)
+
+        if (element) {
+            return element
+        }
+    }
+
+    return null
+}
+
+export function hasVacancyParseContentSelectors(
+    url: string,
+    config: ContentConfig = DEFAULT_CONTENT_CONFIG,
+): boolean {
+    const platform = getMatchingVacancyParsePlatform(url, config)
+
+    return Boolean(platform && platform.vacancyParseContentSelectors.length > 0)
 }
 
 export function getVacancyLetterInputFromConfig(

@@ -47,6 +47,14 @@ function normalizePlatform(platform: Partial<ContentPlatform>): ContentPlatform 
             legacyVacancyPatterns,
             defaultPlatform.vacancyPagePatterns,
         ),
+        vacancyParsePagePatterns: normalizeStringLines(
+            platform.vacancyParsePagePatterns,
+            defaultPlatform.vacancyParsePagePatterns,
+        ),
+        vacancyParseContentSelectors:
+            platform.vacancyParseContentSelectors !== undefined
+                ? normalizeOptionalStringLines(platform.vacancyParseContentSelectors)
+                : defaultPlatform.vacancyParseContentSelectors,
         vacancyLetterInputSelectors: normalizeStringLines(
             legacyVacancySelectors,
             defaultPlatform.vacancyLetterInputSelectors,

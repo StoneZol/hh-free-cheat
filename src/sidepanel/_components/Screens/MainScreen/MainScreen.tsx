@@ -1,5 +1,6 @@
 import { Sparkles } from 'lucide-react'
 import useScreenStore from '@/sidepanel/store'
+import { LastVacancyBlock } from '../../LastVacancyBlock'
 import { ResumePicker } from '../../ResumePicker'
 import { ScreenHeader } from '../../ScreenHeader'
 
@@ -22,11 +23,7 @@ export const MainScreen = () => {
 
             <ResumePicker action="open" onOpen={() => setScreen('resume')} />
 
-            <section className="rounded-xl border border-dashed border-border bg-muted/40 p-4">
-                <p className="text-sm text-muted-foreground">
-                    Скоро здесь появится парсинг вакансии и генерация сопроводительного письма.
-                </p>
-            </section>
+            <LastVacancyBlock />
         </div>
     )
 }
