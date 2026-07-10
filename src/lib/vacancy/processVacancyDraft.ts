@@ -5,6 +5,7 @@ import {
 } from '@/lib/configs/vacancy/classifyStateStorage'
 import { saveLastVacancy } from '@/lib/configs/vacancy/lastVacancyStorage'
 import { classifyVacancyWithLlm } from '@/lib/vacancy/classifyVacancyWithLlm'
+import { isVacancyTextSufficient } from '@/lib/vacancy/vacancyDraftGuards'
 import type { VacancyPageDraft } from '@/lib/types/vacancy/types'
 
 let lastProcessedFingerprint = ''
@@ -18,7 +19,7 @@ function buildDraftFingerprint(draft: VacancyPageDraft): string {
 async function processVacancyDraft(draft: VacancyPageDraft): Promise<void> {
     const fingerprint = buildDraftFingerprint(draft)
 
-    if (!draft.text.trim() || fingerprint === lastProcessedFingerprint || isClassifying) {
+    if (!isVacancyTextSufficient(draft.text) || fingerprint === lastProcessedFingerprint || isClassifying) {
         return
     }
 
@@ -93,7 +94,7 @@ async function processVacancyDraft(draft: VacancyPageDraft): Promise<void> {
 export function scheduleVacancyDraftClassification(
     draft: VacancyPageDraft | null | undefined,
 ): void {
-    if (!draft?.text.trim()) {
+    if (!isVacancyTextSufficient(draft?.text)) {
         return
     }
 

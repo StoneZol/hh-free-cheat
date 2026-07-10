@@ -100,18 +100,18 @@ const SettingsScreenContent = () => {
 
             <SettingsSection
                 title="Сопроводительное письмо"
-                description="Промпт уходит в нейросеть. Подпись приклеиваем к результату локально, без отправки в LLM."
+                description="Промпт и подпись настраиваются здесь. Модель следует вашему промпту — правьте стиль, тон и правила под себя."
                 fields={[
                     {
-                        key: 'basePrompt',
-                        label: 'Базовый промпт',
-                        value: coverLetterConfig.basePrompt,
+                        key: 'generationPrompt',
+                        label: 'Промпт генерации',
+                        value: coverLetterConfig.generationPrompt,
                         description:
-                            'Системные инструкции для генерации сопроводительного. Сюда можно описать тон, структуру и ограничения для модели.',
-                        defaultExample: DEFAULT_COVER_LETTER_CONFIG.basePrompt,
-                        rows: 8,
-                        helperText: 'Передаётся в LLM при генерации.',
-                        onChange: (value) => updateCoverLetterConfig('basePrompt', value),
+                            'Полные инструкции для LLM: стиль, характер, структура, ограничения. Это единственный промпт, который уходит в модель.',
+                        defaultExample: DEFAULT_COVER_LETTER_CONFIG.generationPrompt,
+                        rows: 16,
+                        helperText: 'Редактируйте свободно. Подпись добавляется локально, не в промпт.',
+                        onChange: (value) => updateCoverLetterConfig('generationPrompt', value),
                     },
                     {
                         key: 'letterSignature',

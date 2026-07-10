@@ -3,13 +3,14 @@ import { ScreenHeader } from '../../ScreenHeader'
 import { useResumes } from '@/sidepanel/useResumes'
 
 export const ResumeScreen = () => {
-    const { selectedResume, isLoading } = useResumes()
+    const { resumes, selectedResume, isLoading } = useResumes()
+    const hasResumes = resumes.length > 0
 
     return (
         <div className="flex flex-col gap-4">
             <ScreenHeader title="Резюме" showBack />
 
-            <ResumePicker action="delete" />
+            {hasResumes ? <ResumePicker action="delete" /> : null}
 
             {isLoading ? (
                 <section className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
@@ -72,7 +73,7 @@ export const ResumeScreen = () => {
                 </div>
             ) : (
                 <section className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
-                    Нет выбранного резюме. Сохраните резюме на hh или выберите другое в списке выше.
+                    Нет сохранённых резюме. Откройте резюме на hh и сохраните его кнопкой на странице.
                 </section>
             )}
         </div>

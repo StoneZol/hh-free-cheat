@@ -1,5 +1,9 @@
-import { saveVacancyPageDraft } from '@/lib/configs/vacancy/draftStorage'
+import { loadVacancyPageDraft, saveVacancyPageDraft } from '@/lib/configs/vacancy/draftStorage'
 import { isVacancyParsePage } from '@/lib/configs/content/config'
+import {
+    isVacancyTextSufficient,
+    shouldKeepPreviousVacancyDraft,
+} from '@/lib/vacancy/vacancyDraftGuards'
 import { getContentConfig } from './contentConfigRuntime'
 import { extractVacancyText } from './vacancyPage'
 
@@ -20,7 +24,13 @@ async function syncVacancyPageDraftOnce(url: string, force = false): Promise<voi
 
     const vacancyText = extractVacancyText()
 
-    if (!vacancyText) {
+    if (!isVacancyTextSufficient(vacancyText)) {
+        return
+    }
+
+    const existingDraft = await loadVacancyPageDraft()
+
+    if (shouldKeepPreviousVacancyDraft(url, vacancyText, existingDraft)) {
         return
     }
 

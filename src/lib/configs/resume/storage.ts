@@ -1,69 +1,5 @@
 import type { Resume, ResumeSelectionState } from '@/lib/types/resume/types'
 
-export const DEFAULT_RESUMES: Resume[] = [
-    {
-        id: 'resume-1',
-        title: 'Frontend-разработчик React/Next/TS',
-        source: 'HeadHunter',
-        language: 'Русский',
-        selfAbout: 'Frontend-разработчик с 3+ годами коммерческого опыта в продуктовых командах.',
-        experience: [
-            {
-                company: 'ODAA Studio',
-                position: 'Frontend-разработчик',
-                description: '',
-                startDate: '2022',
-                endDate: '2024',
-            },
-            {
-                company: 'Your CodeReview',
-                position: 'Frontend-разработчик',
-                description: '',
-                startDate: '2021',
-                endDate: '2022',
-            },
-            {
-                company: 'NAOHASA',
-                position: 'Frontend-разработчик',
-                description: '',
-                startDate: '2020',
-                endDate: '2021',
-            },
-        ],
-        education: [],
-        skills: ['TypeScript', 'React', 'Next.js', 'Zustand', 'FSD'],
-        projects: [],
-        certifications: [],
-    },
-    {
-        id: 'resume-2',
-        title: 'Fullstack-разработчик',
-        source: 'HeadHunter',
-        language: 'Русский',
-        selfAbout: 'Опыт в web-разработке, backend и frontend.',
-        experience: [
-            {
-                company: 'Пример компании A',
-                position: 'Fullstack-разработчик',
-                description: '',
-                startDate: '2021',
-                endDate: '2023',
-            },
-            {
-                company: 'Пример компании B',
-                position: 'Fullstack-разработчик',
-                description: '',
-                startDate: '2019',
-                endDate: '2021',
-            },
-        ],
-        education: [],
-        skills: ['TypeScript', 'Node.js', 'PostgreSQL'],
-        projects: [],
-        certifications: [],
-    },
-]
-
 const RESUMES_STORAGE_KEY = 'resumes'
 const SELECTED_RESUME_ID_STORAGE_KEY = 'selectedResumeId'
 
@@ -104,13 +40,13 @@ export async function loadSelectedResumeId(): Promise<string | null> {
     const result = await chrome.storage.local.get(SELECTED_RESUME_ID_STORAGE_KEY)
     const storedSelectedId = result[SELECTED_RESUME_ID_STORAGE_KEY] as string | null | undefined
 
-    if (storedSelectedId) {
-        return storedSelectedId
+    if (!storedSelectedId) {
+        return null
     }
 
     const resumes = await loadResumes()
 
-    return resumes[0]?.id ?? null
+    return resumes.some((resume) => resume.id === storedSelectedId) ? storedSelectedId : null
 }
 
 export async function saveSelectedResumeId(selectedResumeId: string | null): Promise<void> {

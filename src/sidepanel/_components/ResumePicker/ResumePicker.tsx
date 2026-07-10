@@ -17,7 +17,12 @@ export function ResumePicker({ action, onOpen }: ResumePickerProps) {
     } = useResumes()
 
     const hasResumes = resumes.length > 0
-    const isActionDisabled = isLoading || !hasResumes || !selectedResumeId
+
+    if (isLoading || !hasResumes) {
+        return null
+    }
+
+    const isActionDisabled = !selectedResumeId
 
     async function handleAction() {
         if (!selectedResumeId) {
@@ -61,18 +66,13 @@ export function ResumePicker({ action, onOpen }: ResumePickerProps) {
                         <select
                             value={selectedResumeId ?? ''}
                             onChange={(event) => void setSelectedResumeId(event.target.value)}
-                            disabled={isLoading || !hasResumes}
-                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+                            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                         >
-                            {!hasResumes ? (
-                                <option value="">Нет сохранённых резюме</option>
-                            ) : (
-                                resumes.map((resume) => (
-                                    <option key={resume.id} value={resume.id}>
-                                        {resume.title}
-                                    </option>
-                                ))
-                            )}
+                            {resumes.map((resume) => (
+                                <option key={resume.id} value={resume.id}>
+                                    {resume.title}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </label>

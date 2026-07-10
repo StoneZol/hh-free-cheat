@@ -2,6 +2,7 @@ import {
     DEFAULT_CONTENT_CONFIG,
     getMatchingResumePlatform,
     getMatchingVacancyPlatform,
+    isVacancyParsePage,
 } from '@/lib/configs/content/config'
 import type { AppPageInfo, AppPageType } from '@/lib/types/app/page'
 
@@ -51,4 +52,8 @@ export function isResumePage(urlString: string): boolean {
 
 export function isVacancyPage(urlString: string): boolean {
     return resolveAppPageInfo(urlString).type === 'vacancy'
+}
+
+export function isVacancyParseTab(urlString: string): boolean {
+    return isVacancyParsePage(urlString, DEFAULT_CONTENT_CONFIG)
 }

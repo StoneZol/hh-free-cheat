@@ -1,21 +1,21 @@
+import {
+    COVER_LETTER_GENERATE_JOB_STORAGE_KEY,
+    loadCoverLetterGenerateJob,
+} from '@/lib/configs/jobs/coverLetterGenerateJobStorage'
 import { loadResumeParseJob, RESUME_PARSE_JOB_STORAGE_KEY } from '@/lib/configs/jobs/resumeParseJobStorage'
 import {
     loadVacancyPageDraft,
     VACANCY_PAGE_DRAFT_STORAGE_KEY,
 } from '@/lib/configs/vacancy/draftStorage'
+import { processCoverLetterGenerateJob } from '@/lib/coverLetter/processCoverLetterGenerateJob'
 import { processResumeParseJob } from '@/lib/resume/processResumeParseJob'
 import { scheduleVacancyDraftClassification } from '@/lib/vacancy/processVacancyDraft'
+import type { CoverLetterGenerateJob } from '@/lib/types/jobs/coverLetterGenerateJob'
 import type { ResumeParseJob } from '@/lib/types/jobs/resumeParseJob'
 import type { VacancyPageDraft } from '@/lib/types/vacancy/types'
 
-type ExtensionJobHandler<TJob> = (job: TJob | null | undefined) => Promise<void>
-
-type RegisteredExtensionJob = {
-    storageKey: string
-    handle: ExtensionJobHandler<ResumeParseJob>
-}
-
 let isResumeParseProcessing = false
+let isCoverLetterGenerating = false
 
 async function handleResumeParseJob(job: ResumeParseJob | null | undefined): Promise<void> {
     if (!job || job.status !== 'pending' || isResumeParseProcessing) {
@@ -31,16 +31,25 @@ async function handleResumeParseJob(job: ResumeParseJob | null | undefined): Pro
     }
 }
 
+async function handleCoverLetterGenerateJob(
+    job: CoverLetterGenerateJob | null | undefined,
+): Promise<void> {
+    if (!job || job.status !== 'pending' || isCoverLetterGenerating) {
+        return
+    }
+
+    isCoverLetterGenerating = true
+
+    try {
+        await processCoverLetterGenerateJob(job)
+    } finally {
+        isCoverLetterGenerating = false
+    }
+}
+
 function handleVacancyPageDraftChange(draft: VacancyPageDraft | null | undefined): void {
     scheduleVacancyDraftClassification(draft ?? undefined)
 }
-
-const extensionJobs: RegisteredExtensionJob[] = [
-    {
-        storageKey: RESUME_PARSE_JOB_STORAGE_KEY,
-        handle: handleResumeParseJob,
-    },
-]
 
 export function startExtensionJobRouter(): void {
     chrome.storage.onChanged.addListener((changes, areaName) => {
@@ -54,17 +63,18 @@ export function startExtensionJobRouter(): void {
             )
         }
 
-        for (const jobRegistration of extensionJobs) {
-            if (!changes[jobRegistration.storageKey]) {
-                continue
-            }
+        if (changes[RESUME_PARSE_JOB_STORAGE_KEY]) {
+            void handleResumeParseJob(changes[RESUME_PARSE_JOB_STORAGE_KEY].newValue as ResumeParseJob | undefined)
+        }
 
-            void jobRegistration.handle(
-                changes[jobRegistration.storageKey].newValue as ResumeParseJob | undefined,
+        if (changes[COVER_LETTER_GENERATE_JOB_STORAGE_KEY]) {
+            void handleCoverLetterGenerateJob(
+                changes[COVER_LETTER_GENERATE_JOB_STORAGE_KEY].newValue as CoverLetterGenerateJob | undefined,
             )
         }
     })
 
     void loadResumeParseJob().then((job) => handleResumeParseJob(job))
+    void loadCoverLetterGenerateJob().then((job) => handleCoverLetterGenerateJob(job))
     void loadVacancyPageDraft().then((draft) => handleVacancyPageDraftChange(draft))
 }

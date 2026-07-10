@@ -12,7 +12,7 @@ import {
     VACANCY_CLASSIFY_STATE_STORAGE_KEY,
 } from '@/lib/configs/vacancy/classifyStateStorage'
 import { SYNC_VACANCY_DRAFT_MESSAGE } from '@/lib/extension/contentMessages'
-import { isVacancyPage } from '@/lib/hh/page'
+import { isVacancyParseTab } from '@/lib/hh/page'
 import type { LastVacancy, VacancyClassifyState, VacancyPageDraft } from '@/lib/types/vacancy/types'
 
 export type LastVacancyDisplay =
@@ -59,7 +59,7 @@ function isSamePageUrl(left: string, right: string): boolean {
 async function requestActiveTabVacancySync(): Promise<void> {
     const activeTab = await getActiveTab()
 
-    if (!activeTab?.id || !isVacancyPage(activeTab.url ?? '')) {
+    if (!activeTab?.id || !isVacancyParseTab(activeTab.url ?? '')) {
         return
     }
 
@@ -157,10 +157,10 @@ export function useLastVacancy() {
     }, [activeTabUrl, classifyState])
 
     const isClassifying = activeClassifyState?.status === 'classifying'
-    const isActiveVacancyTab = isVacancyPage(activeTabUrl)
+    const isActiveVacancyParseTab = isVacancyParseTab(activeTabUrl)
 
     const displayVacancy = useMemo((): LastVacancyDisplay | null => {
-        if (isActiveVacancyTab) {
+        if (isActiveVacancyParseTab) {
             if (lastVacancy && isSamePageUrl(lastVacancy.url, activeTabUrl)) {
                 return {
                     mode: 'confirmed',
@@ -202,7 +202,7 @@ export function useLastVacancy() {
         activeClassifyState,
         activeDraft,
         activeTabUrl,
-        isActiveVacancyTab,
+        isActiveVacancyParseTab,
         isClassifying,
         lastVacancy,
     ])

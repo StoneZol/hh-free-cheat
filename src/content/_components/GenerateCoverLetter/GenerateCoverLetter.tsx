@@ -4,7 +4,7 @@ import type { GenerateCoverLetterProps } from './GenerateCoverLetter.types'
 import styles from './GenerateCoverLetter.module.css'
 
 const GenerateCoverLetter = (_props: GenerateCoverLetterProps) => {
-    const { handleGenerateCoverLetter } = useGenerateCoverLetterHook()
+    const { handleGenerateCoverLetter, isGenerating } = useGenerateCoverLetterHook()
 
     return (
         <ContentWrapper>
@@ -13,8 +13,9 @@ const GenerateCoverLetter = (_props: GenerateCoverLetterProps) => {
                     type="button"
                     onClick={handleGenerateCoverLetter}
                     className={styles.button}
+                    disabled={isGenerating}
                 >
-                    Сгенерировать сопровод
+                    {isGenerating ? 'Генерирую...' : 'Сгенерировать сопровод'}
                 </button>
             </div>
         </ContentWrapper>
