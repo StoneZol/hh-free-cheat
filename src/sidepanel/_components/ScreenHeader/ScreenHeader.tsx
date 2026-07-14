@@ -1,4 +1,5 @@
 import { ArrowLeft, BookOpen, MessageSquare, Settings } from 'lucide-react'
+import { APP_DISPLAY_NAME } from '@/lib/constants/appName'
 import useScreenStore from '@/sidepanel/store'
 import { cn } from '@/lib/helpers/cn'
 
@@ -38,7 +39,7 @@ const ScreenHeader = ({ title, className }: ScreenHeaderProps) => {
                 )}
 
                 <div className="min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">HH Free Cheat</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">{APP_DISPLAY_NAME}</p>
                     <h1 className="truncate text-lg font-semibold text-foreground">{title}</h1>
                 </div>
             </div>

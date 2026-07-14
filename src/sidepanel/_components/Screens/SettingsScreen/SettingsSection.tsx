@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { cn } from "@/lib/helpers/cn"
 import { ConfirmDeleteButton } from './ConfirmDeleteButton'
 import { SettingsFieldPopover } from './SettingsFieldPopover'
@@ -22,6 +22,7 @@ type SettingsSectionProps = {
     defaultCollapsed?: boolean
     onDelete?: () => void
     deleteLabel?: string
+    headerActions?: ReactNode
 }
 
 export const SettingsSection = ({
@@ -31,12 +32,13 @@ export const SettingsSection = ({
     defaultCollapsed = false,
     onDelete,
     deleteLabel = 'Удалить',
+    headerActions,
 }: SettingsSectionProps) => {
     const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed)
 
-    const headerActions = onDelete ? (
-        <ConfirmDeleteButton label={deleteLabel} onConfirm={onDelete} />
-    ) : null
+    const resolvedHeaderActions =
+        headerActions ??
+        (onDelete ? <ConfirmDeleteButton label={deleteLabel} onConfirm={onDelete} /> : null)
 
     const content = (
         <div className="mt-4 flex flex-col gap-3">
@@ -78,7 +80,7 @@ export const SettingsSection = ({
                     <p className="mt-2 text-sm text-muted-foreground">{description}</p>
                 ) : null}
             </div>
-            {headerActions}
+            {resolvedHeaderActions}
         </div>
     )
 
@@ -103,7 +105,7 @@ export const SettingsSection = ({
                             ) : null}
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
-                            {headerActions}
+                            {resolvedHeaderActions}
                             <span className="text-xs font-medium text-primary">
                                 {isCollapsed ? 'Развернуть' : 'Свернуть'}
                             </span>

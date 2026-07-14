@@ -12,6 +12,7 @@ import {
     stringifyNullable,
     stringifyNullableLines,
 } from './contentPlatformFieldUtils'
+import { ContentPlatformCardActions } from './ContentPlatformCardActions'
 import { loadSettingsScreenData, useSettingsScreen } from './SettingsScreen.hooks'
 import { SettingsSection } from './SettingsSection'
 
@@ -47,6 +48,9 @@ const SettingsScreenContent = () => {
         updateContentPlatform,
         addContentPlatform,
         removeContentPlatform,
+        exportContentPlatform,
+        importContentPlatform,
+        reportPlatformImportError,
         handleSaveConfigs,
         handleResetConfigs,
         handleLlmHealthCheck,
@@ -231,8 +235,15 @@ const SettingsScreenContent = () => {
                     key={`platform-${platformIndex}`}
                     title={`Платформа: ${getPlatformDisplayTitle(platform, platformIndex)}`}
                     defaultCollapsed
-                    onDelete={() => removeContentPlatform(platformIndex)}
-                    deleteLabel="Удалить платформу"
+                    headerActions={
+                        <ContentPlatformCardActions
+                            disabled={isSaving}
+                            onExport={() => void exportContentPlatform(platformIndex)}
+                            onImport={(raw) => importContentPlatform(platformIndex, raw)}
+                            onImportError={(message) => void reportPlatformImportError(message)}
+                            onDelete={() => removeContentPlatform(platformIndex)}
+                        />
+                    }
                     fields={[
                         {
                             key: `${platformIndex}-id`,

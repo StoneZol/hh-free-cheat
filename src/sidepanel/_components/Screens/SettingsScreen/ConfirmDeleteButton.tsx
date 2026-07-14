@@ -1,13 +1,19 @@
 import { useState } from 'react'
+import { Trash2 } from 'lucide-react'
+import { cn } from '@/lib/helpers/cn'
 
 type ConfirmDeleteButtonProps = {
-    label: string
+    label?: string
+    iconOnly?: boolean
+    disabled?: boolean
     onConfirm: () => void
     confirmLabel?: string
 }
 
 export const ConfirmDeleteButton = ({
-    label,
+    label = 'Удалить',
+    iconOnly = false,
+    disabled = false,
     onConfirm,
     confirmLabel = 'Вы уверены?',
 }: ConfirmDeleteButtonProps) => {
@@ -44,13 +50,21 @@ export const ConfirmDeleteButton = ({
     return (
         <button
             type="button"
+            title={iconOnly ? label : undefined}
+            aria-label={iconOnly ? label : undefined}
+            disabled={disabled}
             onClick={(event) => {
                 event.stopPropagation()
                 setIsConfirmationOpen(true)
             }}
-            className="shrink-0 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-200 transition-colors hover:bg-red-500/15"
+            className={cn(
+                'shrink-0 rounded-lg border border-red-500/40 bg-red-500/10 text-red-200 transition-colors hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60',
+                iconOnly
+                    ? 'inline-flex h-8 w-8 items-center justify-center'
+                    : 'px-3 py-1.5 text-xs font-medium',
+            )}
         >
-            {label}
+            {iconOnly ? <Trash2 className="h-4 w-4" /> : label}
         </button>
     )
 }

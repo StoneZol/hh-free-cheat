@@ -25,6 +25,10 @@ import type { CoverLetterConfig } from '@/lib/types/coverLetter/types'
 import type { OpenAiCompatibleConfig } from '@/lib/types/llm/types'
 import type { QuickChatConfig } from '@/lib/types/quickChat/types'
 import type { ResumeParsingConfig } from '@/lib/types/resumeParsing/types'
+import {
+    parseImportedContentPlatform,
+    serializeContentPlatform,
+} from './contentPlatformImportExport'
 
 type SettingsScreenData = {
     llmConfig: OpenAiCompatibleConfig
@@ -157,6 +161,53 @@ export function useSettingsScreen(initialData: SettingsScreenData) {
         }))
     }
 
+    function replaceContentPlatform(platformIndex: number, platform: ContentPlatform) {
+        setContentConfig((currentConfig) => ({
+            ...currentConfig,
+            platforms: currentConfig.platforms.map((currentPlatform, index) =>
+                index === platformIndex ? platform : currentPlatform,
+            ),
+        }))
+    }
+
+    async function exportContentPlatform(platformIndex: number) {
+        const platform = contentConfig.platforms[platformIndex]
+
+        if (!platform) {
+            await setStatus('Платформа не найдена.', 'error')
+            return
+        }
+
+        try {
+            await navigator.clipboard.writeText(serializeContentPlatform(platform))
+            await setStatus('Конфиг платформы скопирован в буфер обмена.', 'success')
+        } catch (error: unknown) {
+            await setStatus(
+                error instanceof Error ? error.message : 'Не удалось экспортировать конфиг платформы.',
+                'error',
+            )
+        }
+    }
+
+    async function importContentPlatform(platformIndex: number, raw: string) {
+        try {
+            const platform = parseImportedContentPlatform(raw)
+            replaceContentPlatform(platformIndex, platform)
+            await setStatus('Конфиг платформы вставлен из буфера обмена.', 'success')
+        } catch (error: unknown) {
+            await setStatus(
+                error instanceof Error
+                    ? `Не удалось импортировать конфиг: ${error.message}`
+                    : 'Не удалось импортировать конфиг платформы из буфера обмена.',
+                'error',
+            )
+        }
+    }
+
+    async function reportPlatformImportError(message: string) {
+        await setStatus(message, 'error')
+    }
+
     function addContentPlatform() {
         setContentConfig((currentConfig) => ({
             ...currentConfig,
@@ -263,6 +314,10 @@ export function useSettingsScreen(initialData: SettingsScreenData) {
         updateContentPlatform,
         addContentPlatform,
         removeContentPlatform,
+        replaceContentPlatform,
+        exportContentPlatform,
+        importContentPlatform,
+        reportPlatformImportError,
         handleSaveConfigs,
         handleResetConfigs,
         handleLlmHealthCheck,

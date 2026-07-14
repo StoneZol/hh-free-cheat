@@ -19,6 +19,8 @@ export default defineManifest({
         'contentSettings',
         'storage',
         'tabs',
+        'clipboardRead',
+        'clipboardWrite',
     ],
     background: {
         service_worker: 'src/background/main.ts',

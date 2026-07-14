@@ -1,4 +1,5 @@
 import type { ContentConfig, ContentPlatform } from '@/lib/types/content/types'
+import { APP_SLUG } from '@/lib/constants/appName'
 
 export const DEFAULT_NEW_CONTENT_PLATFORM: ContentPlatform = {
     id: null,
@@ -43,8 +44,8 @@ export function createDefaultContentPlatform(): ContentPlatform {
     return { ...DEFAULT_NEW_CONTENT_PLATFORM }
 }
 
-export const INJECTED_WIDGET_SELECTOR = '#hh-free-cheat-save-resume'
-export const INJECTED_COVER_LETTER_WIDGET_SELECTOR = '#hh-free-cheat-generate-cover-letter'
+export const INJECTED_WIDGET_SELECTOR = `#${APP_SLUG}-save-resume`
+export const INJECTED_COVER_LETTER_WIDGET_SELECTOR = `#${APP_SLUG}-generate-cover-letter`
 
 function asPatternList(patterns: string[] | null | undefined): string[] {
     return patterns ?? []

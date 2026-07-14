@@ -2,6 +2,7 @@ import {
     getResumeContentElementFromConfig,
     INJECTED_WIDGET_SELECTOR,
 } from '@/lib/configs/content/config'
+import { APP_SLUG } from '@/lib/constants/appName'
 import { getContentConfig } from './contentConfigRuntime'
 
 const blockedLinePatterns = [
@@ -47,7 +48,7 @@ export function extractResumeText(): string | null {
     }
 
     const injectedWidget = document.querySelector<HTMLElement>(INJECTED_WIDGET_SELECTOR)
-    const widgetPlaceholder = document.createComment('hh-free-cheat-save-resume')
+    const widgetPlaceholder = document.createComment(`${APP_SLUG}-save-resume`)
 
     if (injectedWidget?.parentNode) {
         injectedWidget.parentNode.replaceChild(widgetPlaceholder, injectedWidget)
