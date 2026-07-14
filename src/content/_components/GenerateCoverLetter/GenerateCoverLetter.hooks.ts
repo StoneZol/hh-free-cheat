@@ -15,6 +15,8 @@ import { fillVacancyLetterInput } from '../../vacancyLetterInput'
 const useGenerateCoverLetterHook = () => {
     const [isGenerating, setIsGenerating] = useState(false)
     const [hasVacancy, setHasVacancy] = useState(false)
+    const [lastGeneratedLetter, setLastGeneratedLetter] = useState<string | null>(null)
+    const [isCopied, setIsCopied] = useState(false)
 
     const refreshVacancyAvailability = useCallback(async () => {
         const vacancy = await resolveVacancyForGeneration(window.location.href)
@@ -59,13 +61,15 @@ const useGenerateCoverLetterHook = () => {
                     })
                 },
                 onDone: async (_job, result) => {
+                    setLastGeneratedLetter(result.letter)
+
                     const isFilled = fillVacancyLetterInput(result.letter)
 
                     if (!isFilled) {
                         await saveAppStatus({
                             message:
-                                'Сопроводительное сгенерировано, но не удалось вставить текст в поле на странице.',
-                            type: 'error',
+                                'Сопроводительное сгенерировано. Не удалось вставить в поле — скопируйте кнопкой рядом.',
+                            type: 'info',
                         })
                         setIsGenerating(false)
                         await clearCoverLetterGenerateJob()
@@ -119,10 +123,37 @@ const useGenerateCoverLetterHook = () => {
         }
     }, [hasVacancy, isGenerating, jobWatcher])
 
+    const handleCopyLetter = useCallback(async () => {
+        if (!lastGeneratedLetter) {
+            return
+        }
+
+        try {
+            await navigator.clipboard.writeText(lastGeneratedLetter)
+            setIsCopied(true)
+            await saveAppStatus({
+                message: 'Сопроводительное скопировано в буфер обмена.',
+                type: 'success',
+            })
+
+            window.setTimeout(() => {
+                setIsCopied(false)
+            }, 2000)
+        } catch {
+            await saveAppStatus({
+                message: 'Не удалось скопировать текст в буфер обмена.',
+                type: 'error',
+            })
+        }
+    }, [lastGeneratedLetter])
+
     return {
         handleGenerateCoverLetter,
+        handleCopyLetter,
         hasVacancy,
         isGenerating,
+        lastGeneratedLetter,
+        isCopied,
     }
 }
 
