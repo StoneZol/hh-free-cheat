@@ -25,18 +25,20 @@ export function useQuickChat() {
             return
         }
 
+        const [config, quickChatConfig] = await Promise.all([loadLlmConfig(), loadQuickChatConfig()])
+        const maxMessages = quickChatConfig.maxMessages
+
         const userMessage = {
             id: createMessageId(),
             role: 'user' as const,
             content: trimmedDraft,
         }
 
-        addMessage(userMessage)
+        addMessage(userMessage, maxMessages)
         setDraft('')
         setIsLoading(true)
 
         try {
-            const [config, quickChatConfig] = await Promise.all([loadLlmConfig(), loadQuickChatConfig()])
             const history = useQuickChatStore.getState().messages
             const chatMessages: ChatMessage[] = [
                 { role: 'system', content: quickChatConfig.systemPrompt },
@@ -49,20 +51,26 @@ export function useQuickChat() {
             const response = await generateChatCompletion(config, chatMessages)
             const assistantText = extractAssistantText(response)
 
-            addMessage({
-                id: createMessageId(),
-                role: 'assistant',
-                content: assistantText || 'Модель вернула пустой ответ.',
-            })
+            addMessage(
+                {
+                    id: createMessageId(),
+                    role: 'assistant',
+                    content: assistantText || 'Модель вернула пустой ответ.',
+                },
+                maxMessages,
+            )
         } catch (error: unknown) {
-            addMessage({
-                id: createMessageId(),
-                role: 'assistant',
-                content:
-                    error instanceof Error
-                        ? `Ошибка: ${error.message}`
-                        : 'Не удалось получить ответ от LLM.',
-            })
+            addMessage(
+                {
+                    id: createMessageId(),
+                    role: 'assistant',
+                    content:
+                        error instanceof Error
+                            ? `Ошибка: ${error.message}`
+                            : 'Не удалось получить ответ от LLM.',
+                },
+                maxMessages,
+            )
         } finally {
             setIsLoading(false)
         }

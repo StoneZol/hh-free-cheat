@@ -11,7 +11,7 @@ type QuickChatState = {
     draft: string
     isLoading: boolean
     setDraft: (draft: string) => void
-    addMessage: (message: QuickChatMessage) => void
+    addMessage: (message: QuickChatMessage, maxMessages: number) => void
     setIsLoading: (isLoading: boolean) => void
     clearChat: () => void
 }
@@ -21,9 +21,9 @@ const useQuickChatStore = create<QuickChatState>((set) => ({
     draft: '',
     isLoading: false,
     setDraft: (draft) => set({ draft }),
-    addMessage: (message) =>
+    addMessage: (message, maxMessages) =>
         set((state) => ({
-            messages: [...state.messages, message],
+            messages: [...state.messages, message].slice(-maxMessages),
         })),
     setIsLoading: (isLoading) => set({ isLoading }),
     clearChat: () => set({ messages: [], draft: '', isLoading: false }),

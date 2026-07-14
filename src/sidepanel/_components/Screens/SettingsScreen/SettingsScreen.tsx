@@ -191,7 +191,7 @@ const SettingsScreenContent = () => {
 
             <SettingsSection
                 title="Быстрый чат"
-                description="System prompt для экрана чата в sidepanel. Используется как системное сообщение при каждом запросе."
+                description="System prompt и размер контекста для экрана чата в sidepanel."
                 fields={[
                     {
                         key: 'systemPrompt',
@@ -203,6 +203,17 @@ const SettingsScreenContent = () => {
                         rows: 16,
                         helperText: 'Редактируйте под себя. Применяется после сохранения конфигов.',
                         onChange: (value) => updateQuickChatConfig('systemPrompt', value),
+                    },
+                    {
+                        key: 'maxMessages',
+                        label: 'Размер контекста чата',
+                        value: String(quickChatConfig.maxMessages),
+                        description:
+                            'Сколько последних сообщений хранить и отправлять в LLM. Старые выпадают из истории.',
+                        defaultExample: String(DEFAULT_QUICK_CHAT_CONFIG.maxMessages),
+                        helperText: 'От 1 до 100. Одно число.',
+                        onChange: (value) =>
+                            updateQuickChatConfig('maxMessages', Number(value) || DEFAULT_QUICK_CHAT_CONFIG.maxMessages),
                     },
                 ]}
             />
